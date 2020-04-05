@@ -72,7 +72,6 @@ object MockerOffline {
     val productInfoDF: DataFrame = productInfoRdd.toDF()
     val cityInfoDF: DataFrame = cityInfoRdd.toDF()
 
-
     insertHive(spark, "sparkmall.user_visit_action", userVisitActionDF)
     insertHive(spark, "sparkmall.user_info", userInfoDF)
     insertHive(spark, "sparkmall.product_info", productInfoDF)

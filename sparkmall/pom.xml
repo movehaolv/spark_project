@@ -11,6 +11,7 @@
     <modules>
         <module>sparkmall-commom</module>
         <module>sparkmall-mock</module>
+        <module>sparkmall-offline</module>
     </modules>
 
     <properties>

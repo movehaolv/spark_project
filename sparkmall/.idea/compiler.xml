@@ -6,8 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="sparkmall-mock" />
         <module name="sparkmall-commom" />
+        <module name="sparkmall-offline" />
+        <module name="sparkmall-mock" />
       </profile>
     </annotationProcessing>
   </component>
