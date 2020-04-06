@@ -24,11 +24,14 @@ object CategoryTop10 {
     val conditionPro: Properties = PropertiesUtil.load("conditions.propertities")
     val conditionJson: String = conditionPro.getProperty("condition.params.json")
 
+    // 获取Top10品类
     // JSON转为对象
     val conditionObj: JSONObject = JSON.parseObject(conditionJson)
 
     // 读取hive并过滤
     val userVisitActionRDD: RDD[UserVisitAction] = CategoryTop10Handler.readAndFilterData(conditionObj, spark)
+
+    userVisitActionRDD.cache()  // 因为用了两次
 
     // 创建累加器
     val accumulator: CategoryCountAccumulator = new CategoryCountAccumulator
@@ -48,8 +51,8 @@ object CategoryTop10 {
     }
 //    println(accumulator.value)
 
-    // 将accumulator.value 按照category分组 =>  Map(1 -> Map(order_1 -> 588), 4 -> Map(click_4 -> 1898, pay_4 -> 348))
-    val categoryGrouped =  accumulator.value.groupBy{case (k,v)=> k.split("_")(1)}
+    // 将accumulator.value: HashMap[order_1 -> 599,...] 按照category分组 =>  Map(1 -> Map(order_1 ->588), 4 -> Map(click_4 ->1898, pay_4 -> 348))
+    val categoryGrouped: Map[String, mutable.HashMap[String, Long]] = accumulator.value.groupBy { case (k, v) => k.split("_")(1) }
 
     // 按照点击，下单，支付优先级排序 List((1, Map(order_1 -> 588)),(4, Map(click_4 -> 1898, pay_4 -> 348)) )
     val results: List[(String, mutable.HashMap[String, Long])] = categoryGrouped.toList.sortWith { case (c1, c2) => {
@@ -97,12 +100,27 @@ object CategoryTop10 {
     => {
       Array(taskID, category, categoryCount.getOrElse(s"click_$category", 0L), categoryCount.getOrElse
       (s"order_$category", 0L), categoryCount.getOrElse(s"pay_$category", 0L))
-    }
-    }
+    }}
 
     // save to mysql
     JdbcUtil.executeBatchUpdate("insert into category_top10 values(?,?,?,?,?)", categoryCountTop10Array)
 
+
+    // 第三章需求实现：获取Top10品类的Top10Session
+
+    // 获取Top10前10Session
+    val categorySessionTop10: RDD[(Long, String, Int)] = CategoryTop10Handler
+      .getCategoryTop10Session(userVisitActionRDD, results)
+
+    // 拉取到driver端写库
+    val categorySessionTop10Array: Array[(Long, String, Int)] = categorySessionTop10.collect()
+
+    // 写库
+    val arraysSql: Array[Array[Any]] = categorySessionTop10Array.map { case (category, session, count) =>
+      Array(taskID, category, session, count)
+    }
+
+    JdbcUtil.executeBatchUpdate("insert into category_session_top10 values(?,?,?,?)",arraysSql)
 
     spark.close()
   }
