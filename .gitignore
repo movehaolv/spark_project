@@ -1,2 +1,6 @@
-sparkmall/sparkmall-mock/src/main/resources/
-sparkmall/sparkmall-commom/src/main/resources/
+sparkmall/sparkmall-mock/src/main/resources/*.xml
+sparkmall/sparkmall-commom/src/main/resources/*.xml
+sparkmall/sparkmall-offline/src/main/resources/config.properties
+sparkmall//metastore_db/
+sparkmall/.idea/
+sparkmall/.DS_Store

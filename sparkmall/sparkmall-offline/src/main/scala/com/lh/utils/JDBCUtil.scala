@@ -58,7 +58,6 @@ object JdbcUtil {
             pstmt.setObject(i + 1, params(i))
           }
           pstmt.addBatch()
-          println(params.toList)
         }
       }
       rtn = pstmt.executeBatch()

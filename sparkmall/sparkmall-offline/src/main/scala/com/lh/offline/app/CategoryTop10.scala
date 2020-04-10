@@ -21,7 +21,7 @@ object CategoryTop10 {
     val spark: SparkSession = SparkSession.builder().master("local[*]").appName("CategoryTop10").enableHiveSupport().getOrCreate()
 
     // 将配置文件变为JSON
-    val conditionPro: Properties = PropertiesUtil.load("conditions.propertities")
+    val conditionPro: Properties = PropertiesUtil.load("conditions.properties")
     val conditionJson: String = conditionPro.getProperty("condition.params.json")
 
     // 获取Top10品类
@@ -106,7 +106,7 @@ object CategoryTop10 {
     JdbcUtil.executeBatchUpdate("insert into category_top10 values(?,?,?,?,?)", categoryCountTop10Array)
 
 
-    // 第三章需求实现：获取Top10品类的Top10Session
+    // 需求二：获取Top10品类的Top10Session
 
     // 获取Top10前10Session
     val categorySessionTop10: RDD[(Long, String, Int)] = CategoryTop10Handler
