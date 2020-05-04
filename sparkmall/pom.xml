@@ -12,6 +12,7 @@
         <module>sparkmall-commom</module>
         <module>sparkmall-mock</module>
         <module>sparkmall-offline</module>
+        <module>sparkmall-realtime</module>
     </modules>
 
     <properties>
@@ -25,6 +26,7 @@
     </properties>
 
     <dependencies>
+
         <!--此处放日志包，所有项目都要引用-->
         <!-- 所有子项目的日志框架 -->
         <dependency>
